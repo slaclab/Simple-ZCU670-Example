@@ -25,11 +25,13 @@ class RFSoC(pr.Device):
         ))
 
         self.add(xil.RfDataConverter(
-            offset       = 0x9000_0000,
-            # expand       = True,
+            offset    = 0x9000_0000,
+            enAdcTile = [False,False,True,False],
+            enDacTile = [True,False,False,False],
+            # expand    = True,
         ))
 
         self.add(rfsoc.Application(
-            offset       = 0xA000_0000,
-            expand       = True,
+            offset = 0xA000_0000,
+            expand = True,
         ))

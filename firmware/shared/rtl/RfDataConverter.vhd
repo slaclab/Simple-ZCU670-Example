@@ -137,10 +137,10 @@ begin
    U_IpCore : RfDataConverterIpCore
       port map (
          -- Clock Ports
-         clk_adc2      => refClk,
+         clk_adc2      => open,
          dac0_clk_p    => dacClkP(0),
          dac0_clk_n    => dacClkN(0),
-         clk_dac0      => open,
+         clk_dac0      => refClk,
          -- AXI-Lite Ports
          s_axi_aclk    => axilClk,
          s_axi_aresetn => axilRstL,
