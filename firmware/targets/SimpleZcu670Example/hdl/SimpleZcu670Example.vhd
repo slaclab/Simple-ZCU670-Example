@@ -34,8 +34,8 @@ entity SimpleZcu670Example is
       -- RF DATA CONVERTER Ports
       adcClkP   : in  slv(1 downto 0);
       adcClkN   : in  slv(1 downto 0);
-      adcP      : in  slv(7 downto 0);
-      adcN      : in  slv(7 downto 0);
+      adcP      : in  slv(9 downto 0);
+      adcN      : in  slv(9 downto 0);
       dacClkP   : in  slv(1 downto 0);
       dacClkN   : in  slv(1 downto 0);
       dacP      : out slv(7 downto 0);
