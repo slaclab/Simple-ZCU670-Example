@@ -25,17 +25,23 @@ import simple_zcu670_example                 as rfsoc
 import axi_soc_ultra_plus_core.rfsoc_utility as rfsoc_utility
 import axi_soc_ultra_plus_core as soc_core
 
-rogue.Version.minVersion('5.18.4')
+rogue.Version.minVersion('6.0.0')
 
 class Root(pr.Root):
     def __init__(self,
-                 ip          = '10.0.0.200', # ETH Host Name (or IP address)
-                 top_level   = '',
-                 defaultFile = '',
-                 **kwargs):
-
-        # Pass custom value to parent via super function
+            ip          = '10.0.0.200', # ETH Host Name (or IP address)
+            top_level   = '',
+            defaultFile = '',
+            zmqSrvEn = True,  # Flag to include the ZMQ server
+            **kwargs):
         super().__init__(**kwargs)
+
+        #################################################################
+        if zmqSrvEn:
+            self.zmqServer = pyrogue.interfaces.ZmqServer(root=self, addr='*', port=0)
+            self.addInterface(self.zmqServer)
+
+        #################################################################
 
         # Local Variables
         self.top_level   = top_level
