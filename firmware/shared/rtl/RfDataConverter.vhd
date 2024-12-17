@@ -33,14 +33,12 @@ entity RfDataConverter is
       AXIL_BASE_ADDR_G : slv(31 downto 0));
    port (
       -- RF DATA CONVERTER Ports
-      adcClkP         : in  slv(1 downto 0);
-      adcClkN         : in  slv(1 downto 0);
-      adcP            : in  slv(9 downto 0);
-      adcN            : in  slv(9 downto 0);
-      dacClkP         : in  slv(1 downto 0);
-      dacClkN         : in  slv(1 downto 0);
-      dacP            : out slv(7 downto 0);
-      dacN            : out slv(7 downto 0);
+      adcP            : in  slv(1 downto 0);
+      adcN            : in  slv(1 downto 0);
+      dacClkP         : in  slv(0 downto 0);
+      dacClkN         : in  slv(0 downto 0);
+      dacP            : out slv(2 downto 0);
+      dacN            : out slv(2 downto 0);
       sysRefP         : in  sl;
       sysRefN         : in  sl;
       -- ADC/DAC Interface (dspClk domain)
@@ -61,10 +59,10 @@ architecture mapping of RfDataConverter is
 
    component RfDataConverterIpCore
       port (
-         clk_adc2        : out std_logic;
-         dac0_clk_p      : in  std_logic;
-         dac0_clk_n      : in  std_logic;
          clk_dac0        : out std_logic;
+         dac1_clk_p      : in  std_logic;
+         dac1_clk_n      : in  std_logic;
+         clk_dac1        : out std_logic;
          s_axi_aclk      : in  std_logic;
          s_axi_aresetn   : in  std_logic;
          s_axi_awaddr    : in  std_logic_vector(17 downto 0);
@@ -95,6 +93,8 @@ architecture mapping of RfDataConverter is
          vout00_n        : out std_logic;
          vout01_p        : out std_logic;
          vout01_n        : out std_logic;
+         vout10_p        : out std_logic;
+         vout10_n        : out std_logic;
          m2_axis_aresetn : in  std_logic;
          m2_axis_aclk    : in  std_logic;
          m20_axis_tdata  : out std_logic_vector(191 downto 0);
@@ -137,10 +137,9 @@ begin
    U_IpCore : RfDataConverterIpCore
       port map (
          -- Clock Ports
-         clk_adc2      => open,
-         dac0_clk_p    => dacClkP(0),
-         dac0_clk_n    => dacClkN(0),
-         clk_dac0      => refClk,
+         dac1_clk_p    => dacClkP(0),
+         dac1_clk_n    => dacClkN(0),
+         clk_dac1      => refClk,
          -- AXI-Lite Ports
          s_axi_aclk    => axilClk,
          s_axi_aresetn => axilRstL,
@@ -166,15 +165,17 @@ begin
          sysref_in_p   => sysRefP,
          sysref_in_n   => sysRefN,
          -- ADC Ports
-         vin2_01_p     => adcP(8),
-         vin2_01_n     => adcN(8),
-         vin2_23_p     => adcP(9),
-         vin2_23_n     => adcN(9),
+         vin2_01_p     => adcP(0),
+         vin2_01_n     => adcN(0),
+         vin2_23_p     => adcP(1),
+         vin2_23_n     => adcN(1),
          -- DAC Ports
          vout00_p      => dacP(0),
          vout00_n      => dacN(0),
-         vout01_p      => dacP(1),
-         vout01_n      => dacN(1),
+         vout10_p      => dacP(1),
+         vout10_n      => dacN(1),
+         vout01_p      => dacP(2),
+         vout01_n      => dacN(2),
 
          -- ADC[9:8] AXI Stream Interface
          m2_axis_aresetn => rfdcRstL,
@@ -204,7 +205,7 @@ begin
          RST_IN_POLARITY_G => '1',
          NUM_CLOCKS_G      => 2,
          -- MMCM attributes
-         CLKIN_PERIOD_G    => 3.255,    -- 307.2 MHz
+         CLKIN_PERIOD_G    => 2.959,    -- 337.92 MHz
          CLKFBOUT_MULT_G   => 4,        -- 1228.8 MHz = 4 x 307.2 MHz
          CLKOUT0_DIVIDE_G  => 3,        -- 409.6 MHz = 1228.8MHz/3
          CLKOUT1_DIVIDE_G  => 4)        -- 307.2 MHz = 1228.8MHz/4

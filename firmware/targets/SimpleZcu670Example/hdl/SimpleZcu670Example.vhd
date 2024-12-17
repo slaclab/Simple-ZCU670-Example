@@ -32,14 +32,12 @@ entity SimpleZcu670Example is
       BUILD_INFO_G : BuildInfoType);
    port (
       -- RF DATA CONVERTER Ports
-      adcClkP   : in  slv(1 downto 0);
-      adcClkN   : in  slv(1 downto 0);
-      adcP      : in  slv(9 downto 0);
-      adcN      : in  slv(9 downto 0);
-      dacClkP   : in  slv(1 downto 0);
-      dacClkN   : in  slv(1 downto 0);
-      dacP      : out slv(7 downto 0);
-      dacN      : out slv(7 downto 0);
+      adcP   : in  slv(1 downto 0);
+      adcN   : in  slv(1 downto 0);
+      dacClkP   : in  slv(0 downto 0);
+      dacClkN   : in  slv(0 downto 0);
+      dacP      : out slv(2 downto 0);
+      dacN      : out slv(2 downto 0);
       sysRefP   : in  sl;
       sysRefN   : in  sl;
       sysRefSel : out sl;               -- 0=Si5381A, 1=CLK104
@@ -176,8 +174,6 @@ begin
          AXIL_BASE_ADDR_G => AXIL_CONFIG_C(RFDC_INDEX_C).baseAddr)
       port map (
          -- RF DATA CONVERTER Ports
-         adcClkP         => adcClkP,
-         adcClkN         => adcClkN,
          adcP            => adcP,
          adcN            => adcN,
          dacClkP         => dacClkP,
