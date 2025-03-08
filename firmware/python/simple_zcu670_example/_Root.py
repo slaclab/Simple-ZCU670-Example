@@ -25,7 +25,7 @@ import simple_zcu670_example                 as rfsoc
 import axi_soc_ultra_plus_core.rfsoc_utility as rfsoc_utility
 import axi_soc_ultra_plus_core as soc_core
 
-rogue.Version.minVersion('6.0.0')
+rogue.Version.minVersion('6.5.0')
 
 class Root(pr.Root):
     def __init__(self,
@@ -66,7 +66,13 @@ class Root(pr.Root):
         else:
             self.memMap = rogue.hardware.axi.AxiMemMap('/dev/axi_memory_map')
 
-        # Added the RFSoC HW device
+        # Add the RFDC API interface
+        self.memRfdc = rogue.interfaces.memory.TcpClient(ip,9002)
+        self.add(rfsoc_utility.Rfdc(
+            memBase = self.memRfdc,
+        ))
+
+        # Added the RFSoC device
         self.add(rfsoc.RFSoC(
             memBase    = self.memMap,
             offset     = 0x04_0000_0000, # Full 40-bit address space
@@ -110,20 +116,23 @@ class Root(pr.Root):
         # Useful pointers
         dacSigGen = self.RFSoC.Application.DacSigGen
 
-        # Update all SW remote registers
+        print('Issuing a reset to the user logic')
+        self.RFSoC.AxiSocCore.UserRst()
+
+        print('Wait for DSP Clock to be stable')
+        self.RFSoC.AxiSocCore.DspRstWait()
+
+        # Enable application after DSP clock stable has been configured
+        self.RFSoC.Application.enable.set(True)
         self.ReadAll()
+
+        # Initialize the RF Data Converter
+        self.Rfdc.Init()
 
         # Load the Default YAML file
         print(f'Loading path={self.defaultFile} Default Configuration File...')
         self.LoadConfig(self.defaultFile)
         self.ReadAll()
-
-        # Initialize the RF Data Converter
-        self.RFSoC.RfDataConverter.Init()
-
-        # Wait for DSP Clock to be stable
-        while(self.RFSoC.AxiSocCore.AxiVersion.DspReset.get()):
-            time.sleep(0.01)
 
         # Load the waveform data into DacSigGen
         csvFile = dacSigGen.CsvFilePath.get()
@@ -133,8 +142,5 @@ class Root(pr.Root):
             dacSigGen.LoadCsvFile()
         else:
             self.RFSoC.Application.DacSigGenLoader.LoadSingleTones()
-
-        # Update all SW remote registers
-        self.ReadAll()
 
     ##################################################################################
