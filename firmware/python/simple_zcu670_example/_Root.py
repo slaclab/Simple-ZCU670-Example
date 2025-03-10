@@ -34,7 +34,7 @@ class Root(pr.Root):
             defaultFile = '',
             zmqSrvEn = True,  # Flag to include the ZMQ server
             **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(timeout=5.0,**kwargs)
 
         #################################################################
         if zmqSrvEn:
